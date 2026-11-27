@@ -1,5 +1,5 @@
 import { ArrowDown, ArrowRight, Sparkles } from 'lucide-react'
-import AutomationDemo from './AutomationDemo.jsx'
+import WorkflowCanvas from './WorkflowCanvas.jsx'
 
 function Hero() {
   return (
@@ -20,7 +20,7 @@ function Hero() {
           </div>
           <div className="hero-footnote"><Sparkles size={15} /> İşletmenize göre tasarlanır. Ekibinizle birlikte çalışır.</div>
         </div>
-        <div className="hero-visual" id="ornek-akis"><AutomationDemo /></div>
+        <div className="hero-visual" id="ornek-akis"><WorkflowCanvas /></div>
       </div>
       <a className="hero-scroll" href="#cozumler"><span>Keşfet</span><ArrowDown size={15} /></a>
     </section>

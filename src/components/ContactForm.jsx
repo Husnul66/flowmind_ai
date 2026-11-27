@@ -1,13 +1,16 @@
 import { useRef, useState } from 'react'
-import { ArrowRight, CheckCircle2, Mail, MessageCircle, ShieldCheck } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Clock3, Mail, MessageCircle, ShieldCheck } from 'lucide-react'
 
 const packages = ['Başlangıç', 'Büyüme', 'Kurumsal']
 
-function ContactForm({ selectedPackage, onPackageChange }) {
+function ContactForm({ selectedPackage, onPackageChange, lastGeneratedDemo }) {
   const formRef = useRef(null)
   const [status, setStatus] = useState('idle')
   const [errorDetail, setErrorDetail] = useState('')
-  const webhookUrl = import.meta.env.VITE_ACTIVEPIECES_WEBHOOK_URL?.trim()
+  const [syncMessage, setSyncMessage] = useState('')
+  const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000')
+    .trim()
+    .replace(/\/+$/, '')
   const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')
   const contactEmail = import.meta.env.VITE_CONTACT_EMAIL?.trim()
 
@@ -17,12 +20,9 @@ function ContactForm({ selectedPackage, onPackageChange }) {
 
     setStatus('loading')
     setErrorDetail('')
+    setSyncMessage('')
 
     try {
-      if (!webhookUrl) {
-        throw new Error('missing-webhook')
-      }
-
       const formData = new FormData(formRef.current)
       const payload = {
         fullName: formData.get('fullName'),
@@ -33,28 +33,55 @@ function ContactForm({ selectedPackage, onPackageChange }) {
         selectedPackage: formData.get('selectedPackage'),
         requirements: formData.get('requirements'),
         submittedAt: new Date().toISOString(),
+        demo_title: lastGeneratedDemo?.title || 'İşletmenize Özel Otomasyon Talebi',
+        brand_name: lastGeneratedDemo?.mini_site?.brand_name || '',
+        solution_summary: lastGeneratedDemo?.solution_summary
+          || 'İhtiyaçlarınıza özel AI destekli iş akışı ve otomasyon planlaması.',
+        estimated_time_saving: lastGeneratedDemo?.estimated_time_saving
+          || 'Haftalık ortalama %40-%60 zaman tasarrufu potansiyeli',
+        steps_summary: lastGeneratedDemo?.steps?.length
+          ? lastGeneratedDemo.steps.map((step, index) => `${index + 1}. ${step.name}`).join(' → ')
+          : '1. İhtiyaç Analizi → 2. Akış Tasarımı → 3. Canlı Kurulum',
       }
 
-      const response = await fetch(webhookUrl, {
+      const response = await fetch(`${apiBaseUrl}/api/leads`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
 
       if (!response.ok) {
-        throw new Error(`http-${response.status}`)
+        throw new Error('request-failed')
+      }
+
+      const result = await response.json()
+      if (
+        !['synced', 'pending', 'failed'].includes(result.googleSheetsSyncStatus)
+        || !['not_configured', 'accepted', 'failed'].includes(result.activepiecesStatus)
+        || typeof result.webhook_synced !== 'boolean'
+      ) {
+        throw new Error('invalid-response')
       }
 
       formRef.current.reset()
       onPackageChange('')
-      setStatus('success')
+      if (result.googleSheetsSyncStatus === 'synced') {
+        setStatus('success')
+      } else {
+        setStatus('pending')
+        setSyncMessage(
+          result.webhook_synced
+            ? 'Activepieces isteği kabul etti; Google Sheets aktarımı henüz doğrulanmadı. Kaydınız sistemde korunuyor.'
+            : result.activepiecesStatus === 'failed'
+              ? 'Otomasyon servisine ulaşılamadı. Google Sheets aktarımı tamamlanmadı; kaydınız sistemde korunuyor.'
+              : 'Activepieces henüz yapılandırılmadı. Google Sheets aktarımı beklemede; kaydınız sistemde korunuyor.',
+        )
+      }
     } catch (error) {
       setStatus('error')
-      setErrorDetail(
-        error.message === 'missing-webhook'
-          ? 'Gönderim için VITE_ACTIVEPIECES_WEBHOOK_URL ayarlanmalıdır.'
-          : 'Ağ bağlantısı, sunucu yanıtı veya tarayıcı CORS ayarları gönderimi engellemiş olabilir. Girdiğiniz bilgiler bu sayfada korunuyor.',
-      )
+      setErrorDetail(error.message === 'invalid-response'
+        ? 'Sunucudan beklenmeyen bir yanıt alındı. Girdiğiniz bilgiler bu sayfada korunuyor.'
+        : 'Sunucuya bağlanılamadı veya talep doğrulanamadı. Girdiğiniz bilgiler bu sayfada korunuyor.')
     }
   }
 
@@ -81,10 +108,13 @@ function ContactForm({ selectedPackage, onPackageChange }) {
             <span className="form-secure"><ShieldCheck size={15} /> Güvenli form</span>
           </div>
 
-          {status === 'success' && (
-            <div className="form-alert form-alert-success" role="status">
-              <CheckCircle2 size={20} />
-              <div><strong>Talebiniz alındı!</strong><span>İlginiz için teşekkür ederiz. En kısa sürede sizinle iletişime geçeceğiz.</span></div>
+          {(status === 'success' || status === 'pending') && (
+            <div className={`form-alert ${status === 'pending' ? 'form-alert-pending' : 'form-alert-success'}`} role="status">
+              {status === 'pending' ? <Clock3 size={20} /> : <CheckCircle2 size={20} />}
+              <div>
+                <strong>{status === 'pending' ? 'Talebiniz kaydedildi.' : 'Talebiniz alındı!'}</strong>
+                <span>{status === 'pending' ? syncMessage : 'İlginiz için teşekkür ederiz. En kısa sürede sizinle iletişime geçeceğiz.'}</span>
+              </div>
             </div>
           )}
           {status === 'error' && (
