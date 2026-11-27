@@ -19,7 +19,7 @@ import {
 const MAX_CHARACTERS = 1000
 const examplePrompt =
   'Bir güzellik salonu için WhatsApp üzerinden gelen randevu taleplerini yöneten, uygun saatleri kontrol eden ve müşterilere otomatik cevap veren bir sistem istiyorum.'
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000')
+const apiBaseUrl = (import.meta.env.VITE_API_URL || '')
   .trim()
   .replace(/\/+$/, '')
 

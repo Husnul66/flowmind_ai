@@ -262,6 +262,24 @@ def test_generation_settings_are_disabled_with_expected_defaults(
     assert settings.demo_daily_limit == 5
 
 
+def test_frontend_url_is_added_to_cors_origins(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("FRONTEND_ORIGINS", "http://localhost:5173")
+    monkeypatch.setenv(
+        "FRONTEND_URL",
+        "https://flowmind-ai.vercel.app/, https://preview.vercel.app",
+    )
+
+    settings = get_settings()
+
+    assert settings.frontend_origins == (
+        "http://localhost:5173",
+        "https://flowmind-ai.vercel.app",
+        "https://preview.vercel.app",
+    )
+
+
 @pytest.mark.parametrize("prompt", ["", "   ", "a" * 1001, "a" * 1000 + " "])
 def test_invalid_prompt_does_not_call_gemini(
     tmp_path: Path,
@@ -442,4 +460,33 @@ def test_minimum_interval_blocks_same_client(tmp_path: Path) -> None:
     assert first_response.status_code == 200
     assert second_response.status_code == 429
     assert int(second_response.headers["retry-after"]) > 0
+    assert len(fake_gemini.calls) == 1
+
+
+def test_forwarded_for_first_ip_is_used_for_minimum_interval(
+    tmp_path: Path,
+) -> None:
+    fake_gemini = FakeGeminiClient(response_text=json.dumps(VALID_DEMO))
+    app, _ = make_demo_app(
+        tmp_path / "forwarded-for.sqlite3",
+        fake_gemini,
+        minimum_interval_seconds=60,
+    )
+    forwarded_ip = "203.0.113.10"
+
+    with TestClient(app, client=("192.0.2.1", 12345)) as first_client:
+        first_response = first_client.post(
+            "/api/demos",
+            json={"prompt": "Randevuları otomatik yönet."},
+            headers={"X-Forwarded-For": f"{forwarded_ip}, 198.51.100.1"},
+        )
+    with TestClient(app, client=("192.0.2.2", 12345)) as second_client:
+        second_response = second_client.post(
+            "/api/demos",
+            json={"prompt": "Randevuları otomatik yönet."},
+            headers={"X-Forwarded-For": f"{forwarded_ip}, 198.51.100.2"},
+        )
+
+    assert first_response.status_code == 200
+    assert second_response.status_code == 429
     assert len(fake_gemini.calls) == 1

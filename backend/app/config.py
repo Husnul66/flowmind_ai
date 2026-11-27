@@ -31,16 +31,25 @@ def get_settings() -> Settings:
         if configured_database_path.is_absolute()
         else BACKEND_DIR / configured_database_path
     )
-    frontend_origins = tuple(
-        origin.strip()
-        for origin in os.getenv(
+    configured_frontend_origins = (
+        os.getenv(
             "FRONTEND_ORIGINS",
             (
                 "http://localhost:5173,http://127.0.0.1:5173,"
                 "http://localhost:5174,http://127.0.0.1:5174"
             ),
         ).split(",")
-        if origin.strip()
+        + os.getenv("FRONTEND_URL", "").split(",")
+    )
+    frontend_origins = tuple(
+        dict.fromkeys(
+            origin.strip().rstrip("/")
+            for origin in [
+                "http://localhost:5173",
+                *configured_frontend_origins,
+            ]
+            if origin.strip()
+        )
     )
     generation_enabled = os.getenv("DEMO_GENERATION_ENABLED", "false").strip().lower()
 

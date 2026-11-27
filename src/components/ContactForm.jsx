@@ -8,7 +8,7 @@ function ContactForm({ selectedPackage, onPackageChange, lastGeneratedDemo }) {
   const [status, setStatus] = useState('idle')
   const [errorDetail, setErrorDetail] = useState('')
   const [syncMessage, setSyncMessage] = useState('')
-  const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000')
+  const apiBaseUrl = (import.meta.env.VITE_API_URL || '')
     .trim()
     .replace(/\/+$/, '')
   const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '').replace(/\D/g, '')

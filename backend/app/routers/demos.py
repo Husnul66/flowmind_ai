@@ -39,7 +39,10 @@ def create_demo(payload: DemoCreate, request: Request) -> DemoResponse:
             detail="Gemini API anahtarı backend ortamında yapılandırılmalıdır.",
         )
 
-    client_host = request.client.host if request.client is not None else "unknown"
+    forwarded_for = request.headers.get("X-Forwarded-For", "")
+    client_host = forwarded_for.split(",", 1)[0].strip()
+    if not client_host:
+        client_host = request.client.host if request.client is not None else "unknown"
     client_hash = hashlib.sha256(client_host.encode("utf-8")).hexdigest()
     try:
         request.app.state.database.reserve_demo_generation(

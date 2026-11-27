@@ -14,7 +14,7 @@ python -m pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
 
-`backend/.env` dosyasındaki `ACTIVEPIECES_WEBHOOK_URL` değerini kendi Activepieces webhook URL'nizle doldurun. `FRONTEND_ORIGINS` geliştirme ortamında Vite adreslerini içerir. `.env` dosyasını Git'e eklemeyin.
+`backend/.env` dosyasındaki `ACTIVEPIECES_WEBHOOK_URL` değerini kendi Activepieces webhook URL'nizle doldurun. `.env` dosyasını Git'e eklemeyin.
 
 Backend'i başlatın:
 
@@ -39,7 +39,7 @@ cd ..
 npm run dev
 ```
 
-Kök dizindeki `.env.example` dosyasını `.env` olarak kopyalayın. `VITE_API_BASE_URL` varsayılan olarak `http://localhost:8000` değerini kullanır; gerekirse backend adresinizle güncelleyin. WhatsApp ve e-posta alanlarını gerçek iletişim bilgilerinizle doldurun. Vite ortam değişkenlerini değiştirdikten sonra geliştirme sunucusunu yeniden başlatın.
+Kök dizindeki `.env.example` dosyasını `.env` olarak kopyalayın. `VITE_API_URL` yerel geliştirmede `http://localhost:8000` değerini kullanır; boş bırakıldığında API istekleri aynı origin'e gider. WhatsApp ve e-posta alanlarını gerçek iletişim bilgilerinizle doldurun. Vite ortam değişkenlerini değiştirdikten sonra geliştirme sunucusunu yeniden başlatın.
 
 Frontend kontrolleri:
 
@@ -88,6 +88,12 @@ Bir lead yalnızca Activepieces isteğe tam olarak HTTP `200` döndürür ve yan
 5. Activepieces test çalıştırması ve gerçek form gönderimiyle hedef tabloya satır eklendiğini doğrulayın. Bu doğrulama yapılmadan Google Sheets entegrasyonunu tamamlanmış kabul etmeyin.
 
 Webhook timeout süresi `ACTIVEPIECES_TIMEOUT_SECONDS` ile ayarlanır. Yerel CORS izin listesi varsayılan olarak `localhost` ve `127.0.0.1` üzerindeki Vite portları `5173` ve `5174`'ü kapsar. Diğer adresleri `FRONTEND_ORIGINS` içinde virgülle ayırın. Üretimde yalnızca gerçek frontend origin'lerinizi tanımlayın.
+
+## Canlıya dağıtım (Vercel + Render)
+
+- **Vercel:** Proje kökünü deploy edin. `vercel.json` SPA route'larını `index.html`'e yönlendirir. Vercel Project Settings > Environment Variables içinde `VITE_API_URL` değerini Render API servis URL'si olarak ayarlayın (ör. `https://flowmind-api.onrender.com`), ardından yeniden deploy edin.
+- **Render:** Web Service'in Root Directory değerini `backend` yapın. Build command: `pip install -r requirements.txt`; Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`. `GEMINI_API_KEY`, `DEMO_GENERATION_ENABLED=true`, `ACTIVEPIECES_WEBHOOK_URL` ve `FRONTEND_URL` (Vercel origin'i) ortam değişkenlerini tanımlayın. `FRONTEND_URL` virgülle ayrılmış birden çok origin kabul eder; `FRONTEND_ORIGINS` geliştirme origin'leri için desteklenmeye devam eder.
+- SQLite dosyasının yeniden başlatma ve deploy'larda korunması için Render'da kalıcı disk bağlayıp `DATABASE_PATH` değerini mount yolu altında (ör. `/var/data/flowmind.db`) ayarlayın. Kalıcı disk olmadan SQLite dosyası deploy'lar arasında garanti edilmez.
 
 ## Geliştirme kapsamı
 
