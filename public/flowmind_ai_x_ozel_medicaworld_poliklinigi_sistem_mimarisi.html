@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowMind AI × Özel Medicaworld Polikliniği | Özel AI Sistem Mimarisi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Cormorant Garamond"', 'serif'],
+          },
+          colors: {
+            obsidian: '#060A13',
+            midnight: '#0B1221',
+            champagne: '#D4AF37',
+            champagneLight: '#F3E5AB',
+            clinical: '#0D9488',
+            clinicalGlow: '#14B8A6',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --gold: #D4AF37;
+      --gold-soft: rgba(212, 175, 55, 0.22);
+      --teal: #0D9488;
+      --teal-glow: rgba(20, 184, 166, 0.28);
+    }
+
+    body {
+      background-color: #060A13;
+      color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Luxury Mesh Background */
+    .luxury-bg {
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(212, 175, 55, 0.11) 0%, transparent 42%),
+        radial-gradient(circle at 85% 18%, rgba(13, 148, 136, 0.13) 0%, transparent 45%),
+        radial-gradient(circle at 50% 85%, rgba(212, 175, 55, 0.07) 0%, transparent 50%),
+        linear-gradient(180deg, #060A13 0%, #09101E 50%, #060A13 100%);
+    }
+
+    /* Subtle Architectural Grid Overlay */
+    .arch-grid {
+      background-size: 44px 44px;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    }
+
+    /* Glassmorphism Cards */
+    .glass-panel {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.78) 0%, rgba(9, 14, 28, 0.88) 100%);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.65);
+    }
+
+    .glass-gold {
+      background: linear-gradient(145deg, rgba(20, 27, 45, 0.85) 0%, rgba(10, 15, 28, 0.94) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(212, 175, 55, 0.32);
+      box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.75), inset 0 1px 0 0 rgba(243, 229, 171, 0.16);
+    }
+
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #F7E7B4 0%, #D4AF37 50%, #B8860B 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .teal-gradient-text {
+      background: linear-gradient(135deg, #5EEAD4 0%, #14B8A6 55%, #0D9488 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Animated SVG Pipeline Flow */
+    @keyframes flowDash {
+      to {
+        stroke-dashoffset: -36;
+      }
+    }
+
+    .flow-line {
+      stroke-dasharray: 6 6;
+      animation: flowDash 1.4s linear infinite;
+    }
+
+    @keyframes pulseRing {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.65;
+      }
+      50% {
+        transform: scale(1.08);
+        opacity: 1;
+      }
+    }
+
+    .pulse-ring {
+      animation: pulseRing 3.2s ease-in-out infinite;
+    }
+
+    /* Stage Active & Simulation Highlights */
+    .stage-card {
+      transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .stage-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(212, 175, 55, 0.45);
+    }
+
+    .stage-card.active-stage {
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.4), 0 18px 45px -10px rgba(212, 175, 55, 0.22);
+      background: linear-gradient(155deg, rgba(28, 36, 58, 0.92) 0%, rgba(11, 18, 33, 0.96) 100%);
+    }
+
+    .stage-card.sim-highlight {
+      border-color: #14B8A6 !important;
+      box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.55), 0 0 36px rgba(20, 184, 166, 0.32) !important;
+      transform: translateY(-4px) scale(1.01);
+    }
+
+    /* Screenshot Mode: Hides helper UI, copy boxes & simulation controls for crisp WhatsApp/Email screenshots */
+    body.screenshot-mode .hide-in-screenshot {
+      display: none !important;
+    }
+
+    body.screenshot-mode .screenshot-badge-active {
+      background: rgba(212, 175, 55, 0.2);
+      border-color: #D4AF37;
+      color: #F7E7B4;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #060A13;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1E293B;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #D4AF37;
+    }
+  </style>
+</head>
+<body class="luxury-bg arch-grid min-h-screen antialiased selection:bg-amber-500/30 selection:text-amber-100">
+
+  <!-- Floating Toast Notification (Replaces alert()) -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 pointer-events-none opacity-0 translate-y-3 transition-all duration-300">
+    <div class="glass-gold rounded-2xl px-5 py-3.5 flex items-center gap-3 shadow-2xl">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+      <span id="toast-message" class="text-sm font-semibold text-amber-50">Metin panoya kopyalandı</span>
+    </div>
+  </div>
+
+  <!-- Top Utility Bar -->
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#060A13]/85 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-300 via-amber-500 to-teal-600 p-[1px] shrink-0">
+          <div class="w-full h-full rounded-[11px] bg-[#070C17] flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l2.4 5.8L20 11.2l-5.6 2.4L12 19.4l-2.4-5.8L4 11.2l5.6-2.4L12 3z" />
+              <circle cx="12" cy="11.2" r="2" fill="currentColor" />
+            </svg>
+          </div>
+        </div>
+        <div class="truncate">
+          <div class="flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wide text-slate-100 truncate">
+            <span class="gold-gradient-text">FlowMind AI</span>
+            <span class="text-slate-500">×</span>
+            <span class="truncate">Özel Medicaworld Polikliniği</span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block">Yönetici Sistem Mimarisi & Dijital Dönüşüm Raporu</p>
+        </div>
+      </div>
+
+      <!-- Right Controls: Screenshot Mode Toggle -->
+      <div class="flex items-center gap-2.5 shrink-0">
+        <a href="https://flowmind-ai-nu-two.vercel.app" target="_blank" rel="noopener noreferrer"
+           class="hide-in-screenshot hidden md:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-teal-200 bg-teal-500/10 border border-teal-400/30 hover:bg-teal-500/20 transition">
+          <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+          Canlı Demo
+        </a>
+        <button id="screenshot-toggle" onclick="toggleScreenshotMode()"
+                class="screenshot-badge-active inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-200 bg-white/5 border border-white/15 hover:border-amber-400/50 hover:text-amber-200 transition cursor-pointer">
+          <svg class="w-4 h-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <circle cx="12" cy="13" r="3" />
+          </svg>
+          <span id="screenshot-label">Ekran Görüntüsü Modu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10 sm:space-y-14">
+
+    <!-- 1. EXECUTIVE HERO & BESPOKE CLINIC VISUAL ARTWORK -->
+    <section class="glass-gold rounded-3xl p-6 sm:p-10 relative overflow-hidden">
+      <!-- Decorative Corner Glows -->
+      <div class="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-amber-400/10 blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-teal-500/10 blur-3xl pointer-events-none"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center relative z-10">
+        <!-- Left Executive Narrative -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-200 text-xs font-semibold tracking-wide">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            Özel Dijital Dönüşüm &amp; AI Sistem Mimarisi | Kadıköy, İstanbul
+          </div>
+
+          <div class="space-y-3">
+            <p class="text-xs sm:text-sm uppercase tracking-[0.22em] text-teal-300 font-semibold">
+              FlowMind AI × Özel Medicaworld Polikliniği
+            </p>
+            <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight leading-[1.15] text-white">
+              Kozyatağı’nın Lider Polikliniği İçin
+              <span class="font-serif italic font-semibold gold-gradient-text text-4xl sm:text-5xl block sm:inline"> 7/24 Akıllı Hasta &amp; Randevu </span>
+              Mimarisi
+            </h1>
+            <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
+              <strong class="text-white">Özel Medicaworld Polikliniği</strong>’nin yüksek danışan hacmi ve medikal estetik standartlarına özel tasarlanan bu otonom sistem; WhatsApp, Instagram, Web ve Telefon hattından gelen tüm yerli ve uluslararası talepleri <span class="text-amber-200 font-semibold">3 saniyenin altında</span> karşılayarak doğrudan randevuya dönüştürür.
+            </p>
+          </div>
+
+          <!-- Clinic Proof Pills -->
+          <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-1">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/[0.05] border border-amber-400/30">
+              <span class="text-amber-400 text-base">★</span>
+              <span class="text-xs sm:text-sm font-bold text-white">4.7 Google Puanı</span>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/[0.05] border border-white/15">
+              <svg class="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span class="text-xs sm:text-sm font-bold text-white">1.971+ Hasta Yorumu</span>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-teal-500/15 border border-teal-400/35">
+              <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+              <span class="text-xs sm:text-sm font-bold text-teal-200">7/24 Kesintisiz AI Asistan</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Bespoke Luxury Architectural Visual Artwork (SVG Illustration Card) -->
+        <div class="lg:col-span-5">
+          <div class="relative rounded-2xl border border-amber-400/30 bg-gradient-to-b from-[#0D1526] to-[#070B14] p-4 sm:p-5 shadow-2xl">
+            <div class="flex items-center justify-between text-[11px] text-slate-400 mb-3 border-b border-white/10 pb-2.5">
+              <span class="font-semibold text-amber-200 tracking-wider uppercase">Medicaworld AI Ekosistem Görseli</span>
+              <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 font-semibold">VIP Klinik Mimarisi</span>
+            </div>
+
+            <!-- Custom High-Detail SVG Illustration -->
+            <svg viewBox="0 0 460 320" class="w-full h-auto rounded-xl" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#F7E7B4" />
+                  <stop offset="50%" stop-color="#D4AF37" />
+                  <stop offset="100%" stop-color="#9A7209" />
+                </linearGradient>
+                <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#5EEAD4" />
+                  <stop offset="100%" stop-color="#0D9488" />
+                </linearGradient>
+                <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.35" />
+                  <stop offset="60%" stop-color="#0D9488" stop-opacity="0.14" />
+                  <stop offset="100%" stop-color="#060A13" stop-opacity="0" />
+                </radialGradient>
+                <linearGradient id="cardGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#1E293B" stop-opacity="0.9" />
+                  <stop offset="100%" stop-color="#0F172A" stop-opacity="0.95" />
+                </linearGradient>
+              </defs>
+
+              <!-- Background Canvas -->
+              <rect width="460" height="320" rx="14" fill="#070C18" />
+              <circle cx="230" cy="155" r="145" fill="url(#coreGlow)" />
+
+              <!-- Sacred Aesthetic Geometry Rings -->
+              <circle cx="230" cy="155" r="115" fill="none" stroke="rgba(212,175,55,0.16)" stroke-width="1" stroke-dasharray="4 4" />
+              <circle cx="230" cy="155" r="82" fill="none" stroke="rgba(20,184,166,0.22)" stroke-width="1" />
+              <circle cx="230" cy="155" r="52" fill="none" stroke="url(#goldGrad)" stroke-width="1.4" opacity="0.7" />
+
+              <!-- Connecting Neural Paths from Left Channels to Core -->
+              <path d="M 92 68 C 145 68, 155 135, 182 145" fill="none" stroke="url(#tealGrad)" stroke-width="1.8" class="flow-line" />
+              <path d="M 92 155 L 178 155" fill="none" stroke="url(#goldGrad)" stroke-width="1.8" class="flow-line" />
+              <path d="M 92 242 C 145 242, 155 175, 182 165" fill="none" stroke="url(#tealGrad)" stroke-width="1.8" class="flow-line" />
+
+              <!-- Connecting Neural Paths from Core to Right Outputs -->
+              <path d="M 278 145 C 305 135, 315 78, 366 78" fill="none" stroke="url(#goldGrad)" stroke-width="1.8" class="flow-line" />
+              <path d="M 282 155 L 366 155" fill="none" stroke="url(#tealGrad)" stroke-width="1.8" class="flow-line" />
+              <path d="M 278 165 C 305 175, 315 232, 366 232" fill="none" stroke="url(#goldGrad)" stroke-width="1.8" class="flow-line" />
+
+              <!-- Left Input Nodes -->
+              <g transform="translate(16, 46)">
+                <rect width="78" height="44" rx="10" fill="url(#cardGlass)" stroke="rgba(20,184,166,0.45)" stroke-width="1.2" />
+                <text x="39" y="20" text-anchor="middle" fill="#5EEAD4" font-size="9" font-weight="700">WHATSAPP</text>
+                <text x="39" y="33" text-anchor="middle" fill="#CBD5E1" font-size="8">7/24 Canlı Hat</text>
+              </g>
+
+              <g transform="translate(16, 133)">
+                <rect width="78" height="44" rx="10" fill="url(#cardGlass)" stroke="rgba(212,175,55,0.45)" stroke-width="1.2" />
+                <text x="39" y="20" text-anchor="middle" fill="#F7E7B4" font-size="9" font-weight="700">INSTAGRAM</text>
+                <text x="39" y="33" text-anchor="middle" fill="#CBD5E1" font-size="8">DM &amp; Reklam</text>
+              </g>
+
+              <g transform="translate(16, 220)">
+                <rect width="78" height="44" rx="10" fill="url(#cardGlass)" stroke="rgba(20,184,166,0.45)" stroke-width="1.2" />
+                <text x="39" y="20" text-anchor="middle" fill="#5EEAD4" font-size="9" font-weight="700">WEB &amp; SES</text>
+                <text x="39" y="33" text-anchor="middle" fill="#CBD5E1" font-size="8">Çağrı &amp; Site</text>
+              </g>
+
+              <!-- Center AI Core Emblem -->
+              <g transform="translate(230, 155)">
+                <circle r="44" fill="#0A1120" stroke="url(#goldGrad)" stroke-width="2.2" />
+                <!-- Aesthetic Medical Lotus / Star Symbol -->
+                <path d="M 0 -22 C 7 -8, 18 -4, 22 0 C 18 4, 7 8, 0 22 C -7 8, -18 4, -22 0 C -18 -4, -7 -8, 0 -22 Z" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" />
+                <circle r="6" fill="url(#tealGrad)" />
+                <text y="33" text-anchor="middle" fill="#F7E7B4" font-size="7.5" font-weight="800" letter-spacing="1">FLOWMIND AI</text>
+              </g>
+
+              <!-- Right Output Nodes -->
+              <g transform="translate(364, 56)">
+                <rect width="80" height="44" rx="10" fill="url(#cardGlass)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2" />
+                <text x="40" y="20" text-anchor="middle" fill="#F7E7B4" font-size="9" font-weight="700">4 DİL DESTEĞİ</text>
+                <text x="40" y="33" text-anchor="middle" fill="#CBD5E1" font-size="8">TR • EN • AR • RU</text>
+              </g>
+
+              <g transform="translate(364, 133)">
+                <rect width="80" height="44" rx="10" fill="url(#cardGlass)" stroke="rgba(20,184,166,0.55)" stroke-width="1.2" />
+                <text x="40" y="20" text-anchor="middle" fill="#5EEAD4" font-size="9" font-weight="700">VIP RANDEVU</text>
+                <text x="40" y="33" text-anchor="middle" fill="#CBD5E1" font-size="8">Otomatik Takvim</text>
+              </g>
+
+              <g transform="translate(364, 210)">
+                <rect width="80" height="44" rx="10" fill="url(#cardGlass)" stroke="rgba(212,175,55,0.5)" stroke-width="1.2" />
+                <text x="40" y="20" text-anchor="middle" fill="#F7E7B4" font-size="9" font-weight="700">CRM &amp; TAKİP</text>
+                <text x="40" y="33" text-anchor="middle" fill="#CBD5E1" font-size="8">24s / 2s Hatırlatma</text>
+              </g>
+
+              <!-- Bottom Caption Bar inside Artwork -->
+              <rect x="16" y="282" width="428" height="26" rx="8" fill="rgba(212,175,55,0.08)" stroke="rgba(212,175,55,0.22)" />
+              <text x="230" y="299" text-anchor="middle" fill="#E2E8F0" font-size="9.5" font-weight="600">
+                Özel Medicaworld Polikliniği • Kozyatağı, Kadıköy | Kesintisiz Hasta Deneyimi Mimarisi
+              </text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. INTERACTIVE END-TO-END SYSTEM ARCHITECTURE SCHEMA -->
+    <section class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">Uçtan Uca Teknik Mimari</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
+            4 Aşamalı Otonom Poliklinik Akış Şeması
+          </h2>
+          <p class="text-sm text-slate-400 mt-1">
+            Detayları incelemek için herhangi bir aşamaya tıklayın veya canlı senaryo simülasyonunu başlatın.
+          </p>
+        </div>
+
+        <!-- Live Scenario Simulation Controls (Hidden in Screenshot Mode) -->
+        <div class="hide-in-screenshot flex flex-wrap items-center gap-2.5">
+          <button id="btn-sim-a" onclick="runScenario('A')"
+                  class="px-4 py-2.5 rounded-xl text-xs font-bold bg-amber-400/15 text-amber-200 border border-amber-400/40 hover:bg-amber-400/25 transition flex items-center gap-2 cursor-pointer">
+            <span>🌙</span>
+            <span>Senaryo A: Gece 02:30 Yabancı Hasta</span>
+          </button>
+          <button id="btn-sim-b" onclick="runScenario('B')"
+                  class="px-4 py-2.5 rounded-xl text-xs font-bold bg-teal-500/15 text-teal-200 border border-teal-400/40 hover:bg-teal-500/25 transition flex items-center gap-2 cursor-pointer">
+            <span>⚡</span>
+            <span>Senaryo B: Öğle 15+ Eşzamanlı Talep</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Visual 4-Stage Connected Node Diagram -->
+      <div class="relative">
+        <!-- Desktop Horizontal Connector SVG Line Behind Cards -->
+        <svg class="hidden lg:block absolute top-1/2 left-0 w-full h-12 -translate-y-1/2 pointer-events-none z-0" viewBox="0 0 1200 48" preserveAspectRatio="none">
+          <line x1="120" y1="24" x2="1080" y2="24" stroke="rgba(212,175,55,0.22)" stroke-width="2" />
+          <line x1="120" y1="24" x2="1080" y2="24" stroke="#D4AF37" stroke-width="2.5" class="flow-line" />
+        </svg>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 relative z-10">
+          <!-- STAGE 1 -->
+          <div id="stage-card-1" onclick="selectStage(1)"
+               class="stage-card active-stage glass-panel rounded-2xl p-5 cursor-pointer flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-amber-400/15 text-amber-300 border border-amber-400/30">
+                  AŞAMA 01
+                </span>
+                <span class="text-xs font-semibold text-slate-400">Çok Kanallı Giriş</span>
+              </div>
+              <h3 class="text-lg font-bold text-white mb-3">Giriş Kanalları</h3>
+              <ul class="space-y-2.5 text-xs sm:text-[13px] text-slate-300">
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+                  <span>WhatsApp Business API</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-pink-400 shrink-0"></span>
+                  <span>Instagram DM &amp; Reklam Lead</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  <span class="truncate">ozelmedicaworldpoliklinigi.com.tr</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-sky-400 shrink-0"></span>
+                  <span>Çağrı Merkezi &amp; Cevapsız Arama</span>
+                </li>
+              </ul>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-amber-300 font-semibold">
+              <span>Tek Merkezde Birleşme</span>
+              <span>Detay →</span>
+            </div>
+          </div>
+
+          <!-- STAGE 2 -->
+          <div id="stage-card-2" onclick="selectStage(2)"
+               class="stage-card glass-panel rounded-2xl p-5 cursor-pointer flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-teal-500/15 text-teal-300 border border-teal-400/30">
+                  AŞAMA 02
+                </span>
+                <span class="text-xs font-semibold text-slate-400">&lt; 3 sn Yanıt</span>
+              </div>
+              <h3 class="text-lg font-bold text-white mb-3">FlowMind AI Beyni</h3>
+              <ul class="space-y-2.5 text-xs sm:text-[13px] text-slate-300">
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-teal-400 shrink-0"></span>
+                  <span>7/24 Çok Dilli Resepsiyon (TR/EN/AR/RU)</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  <span>Medikal Estetik Bilgi Tabanı</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-teal-400 shrink-0"></span>
+                  <span>Akıllı Ön Triyaj &amp; İşlem Analizi</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  <span>Kurumsal Marka Dili &amp; Empati</span>
+                </li>
+              </ul>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-teal-300 font-semibold">
+              <span>Sınırsız Eşzamanlı Sohbet</span>
+              <span>Detay →</span>
+            </div>
+          </div>
+
+          <!-- STAGE 3 -->
+          <div id="stage-card-3" onclick="selectStage(3)"
+               class="stage-card glass-panel rounded-2xl p-5 cursor-pointer flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-amber-400/15 text-amber-300 border border-amber-400/30">
+                  AŞAMA 03
+                </span>
+                <span class="text-xs font-semibold text-slate-400">Sıfır Çakışma</span>
+              </div>
+              <h3 class="text-lg font-bold text-white mb-3">Akıllı Randevu Motoru</h3>
+              <ul class="space-y-2.5 text-xs sm:text-[13px] text-slate-300">
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  <span>Uzman Hekim &amp; Oda Müsaitlik Kontrolü</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-teal-400 shrink-0"></span>
+                  <span>Otomatik Konsültasyon Planlama</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  <span>Dijital Ön Bilgi &amp; Anamnez Formu</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-teal-400 shrink-0"></span>
+                  <span>Anlık Takvim &amp; Konum Gönderimi</span>
+                </li>
+              </ul>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-amber-300 font-semibold">
+              <span>Doğrudan Dönüşüm</span>
+              <span>Detay →</span>
+            </div>
+          </div>
+
+          <!-- STAGE 4 -->
+          <div id="stage-card-4" onclick="selectStage(4)"
+               class="stage-card glass-panel rounded-2xl p-5 cursor-pointer flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-teal-500/15 text-teal-300 border border-teal-400/30">
+                  AŞAMA 04
+                </span>
+                <span class="text-xs font-semibold text-slate-400">Tam Kontrol</span>
+              </div>
+              <h3 class="text-lg font-bold text-white mb-3">CRM &amp; Takip Otomasyonu</h3>
+              <ul class="space-y-2.5 text-xs sm:text-[13px] text-slate-300">
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-teal-400 shrink-0"></span>
+                  <span>Poliklinik CRM Hasta Kartı Kaydı</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  <span>24s &amp; 2s Kala Otomatik Hatırlatma</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-teal-400 shrink-0"></span>
+                  <span>İşlem Sonrası Memnuniyet Takibi</span>
+                </li>
+                <li class="flex items-center gap-2.5 p-2 rounded-xl bg-white/[0.04] border border-white/5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                  <span>Yönetici KPI &amp; Dönüşüm Paneli</span>
+                </li>
+              </ul>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-teal-300 font-semibold">
+              <span>No-Show Oranında Düşüş</span>
+              <span>Detay →</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Stage Inspector Drawer / Card -->
+      <div id="stage-detail-card" class="glass-panel rounded-2xl p-6 border border-amber-400/25 transition-all">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-8 space-y-2">
+            <div class="flex items-center gap-2.5">
+              <span id="detail-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-400/15 text-amber-300 border border-amber-400/30">
+                Aşama 01 • Giriş Kanalları
+              </span>
+              <span class="text-xs text-slate-400">Özel Medicaworld İş Akışı Entegrasyonu</span>
+            </div>
+            <h4 id="detail-title" class="text-xl font-bold text-white">
+              Tüm Hasta İletişim Kanallarının Tek Akıllı Havuzda Birleşmesi
+            </h4>
+            <p id="detail-desc" class="text-sm text-slate-300 leading-relaxed">
+              Kadıköy Kozyatağı merkezli polikliniğinize WhatsApp Business, Instagram reklamları, ozelmedicaworldpoliklinigi.com.tr canlı destek ve telefon hattı üzerinden gelen tüm mesajlar tek bir merkezi AI yönlendiricisine bağlanır. Yoğun saatlerde hiçbir hasta mesajı sıraya takılmaz veya cevapsız kalmaz.
+            </p>
+          </div>
+          <div class="lg:col-span-4 rounded-xl bg-white/[0.04] border border-white/10 p-4 space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-teal-300">Medicaworld Özel Kazanımı</div>
+            <p id="detail-impact" class="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
+              ✓ Mesai dışı ve öğle yoğunluğunda gelen taleplerde %0 mesaj kaybı ve anında dijital karşılama.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Scenario Simulation Output Console (Appears when Scenario A or B is triggered) -->
+      <div id="simulation-panel" class="hidden hide-in-screenshot glass-gold rounded-2xl p-6 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping"></span>
+            <h4 id="sim-title" class="text-base sm:text-lg font-bold text-white">Canlı Senaryo Simülasyonu</h4>
+          </div>
+          <span id="sim-status" class="px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-200 border border-teal-400/30">
+            Akış Çalışıyor...
+          </span>
+        </div>
+        <div id="sim-steps" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. TESPİT EDİLEN 3 OPERASYONEL DARBOĞAZ & AI ÇÖZÜM EŞLEŞMESİ -->
+    <section class="space-y-6">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-[0.2em] text-teal-300">Klinik Operasyon Analizi</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
+          Tespit Edilen 3 Operasyonel Darboğaz &amp; AI Çözüm Eşleşmesi
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Bottleneck 1 -->
+        <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-5 border-t-2 border-t-amber-400/60">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-rose-300 bg-rose-500/10 border border-rose-400/25 px-3 py-1 rounded-full">
+                Darboğaz 01
+              </span>
+              <span class="text-xs text-slate-400 font-semibold">1.971+ Yorum Hacmi</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Çağrı Merkezi Kapasite Aşımı</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Çok yüksek danışan trafiğinde telefon hatlarının meşgul çalması ve aynı anda onlarca WhatsApp sorusuna yetişilememesi.
+            </p>
+          </div>
+          <div class="rounded-xl bg-teal-500/10 border border-teal-400/30 p-4 space-y-1.5">
+            <div class="text-[11px] font-extrabold uppercase tracking-wider text-teal-300">FlowMind AI Çözümü</div>
+            <div class="text-sm font-bold text-white">Sınırsız Eşzamanlı Yanıt &amp; Sıfır Bekleme Süresi</div>
+          </div>
+        </div>
+
+        <!-- Bottleneck 2 -->
+        <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-5 border-t-2 border-t-teal-400/60">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-rose-300 bg-rose-500/10 border border-rose-400/25 px-3 py-1 rounded-full">
+                Darboğaz 02
+              </span>
+              <span class="text-xs text-slate-400 font-semibold">Sağlık Turizmi &amp; Mesai Dışı</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Gece &amp; Uluslararası Talep Gecikmesi</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Akşam ve gece saatlerinde yurt dışından veya yurt içinden gelen estetik konsültasyon taleplerine ertesi gün dönülmesi nedeniyle oluşan hasta kaybı.
+            </p>
+          </div>
+          <div class="rounded-xl bg-amber-400/10 border border-amber-400/30 p-4 space-y-1.5">
+            <div class="text-[11px] font-extrabold uppercase tracking-wider text-amber-300">FlowMind AI Çözümü</div>
+            <div class="text-sm font-bold text-white">Çok Dilli 7/24 Anlık Karşılama &amp; Konsültasyon Kaydı</div>
+          </div>
+        </div>
+
+        <!-- Bottleneck 3 -->
+        <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-5 border-t-2 border-t-amber-400/60">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-rose-300 bg-rose-500/10 border border-rose-400/25 px-3 py-1 rounded-full">
+                Darboğaz 03
+              </span>
+              <span class="text-xs text-slate-400 font-semibold">Hasta Kabul &amp; Takvim</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Hasta Kabul &amp; Randevu Takip Yükü</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Ön bilgilendirme, uygun hekim/oda eşleştirmesi ve randevu teyit aramalarının personel üzerinde yoğun operasyonel baskı oluşturması.
+            </p>
+          </div>
+          <div class="rounded-xl bg-teal-500/10 border border-teal-400/30 p-4 space-y-1.5">
+            <div class="text-[11px] font-extrabold uppercase tracking-wider text-teal-300">FlowMind AI Çözümü</div>
+            <div class="text-sm font-bold text-white">Otomatik Takvim İşleme &amp; %70 Daha Az Operasyonel Yük</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. BEKLENEN PERFORMANS & ROI GÖSTERGELERİ -->
+    <section class="glass-gold rounded-3xl p-6 sm:p-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">Ölçülebilir Klinik Katma Değer</span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-0.5">Beklenen Performans &amp; ROI Göstergeleri</h2>
+        </div>
+        <span class="text-xs text-slate-400">Özel Medicaworld Polikliniği Projeksiyonu</span>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="rounded-2xl bg-white/[0.04] border border-white/10 p-5 text-center space-y-1.5">
+          <div class="text-3xl sm:text-4xl font-extrabold gold-gradient-text">&lt; 3 sn</div>
+          <div class="text-xs sm:text-sm font-bold text-white">Ortalama İlk Yanıt Süresi</div>
+          <p class="text-[11px] text-slate-400">WhatsApp, IG ve Web’de anlık dönüş</p>
+        </div>
+
+        <div class="rounded-2xl bg-white/[0.04] border border-white/10 p-5 text-center space-y-1.5">
+          <div class="text-3xl sm:text-4xl font-extrabold teal-gradient-text">%70</div>
+          <div class="text-xs sm:text-sm font-bold text-white">Operasyonel İş Yükü Azalması</div>
+          <p class="text-[11px] text-slate-400">Tekrarlayan çağrı &amp; teyit otomasyonu</p>
+        </div>
+
+        <div class="rounded-2xl bg-white/[0.04] border border-white/10 p-5 text-center space-y-1.5">
+          <div class="text-3xl sm:text-4xl font-extrabold gold-gradient-text">7/24</div>
+          <div class="text-xs sm:text-sm font-bold text-white">Çok Dilli Sağlık Turizmi Desteği</div>
+          <p class="text-[11px] text-slate-400">TR, EN, AR, RU kesintisiz karşılama</p>
+        </div>
+
+        <div class="rounded-2xl bg-white/[0.04] border border-white/10 p-5 text-center space-y-1.5">
+          <div class="text-3xl sm:text-4xl font-extrabold teal-gradient-text">+%45</div>
+          <div class="text-xs sm:text-sm font-bold text-white">Randevu Dönüşüm Artışı</div>
+          <p class="text-[11px] text-slate-400">Sıfır cevapsız talep &amp; akıllı takip</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. HAZIR İLETİŞİM & DEMO GÖNDERİM KARTI (Hidden in Ekran Görüntüsü Modu) -->
+    <section id="outreach-section" class="hide-in-screenshot glass-panel rounded-3xl p-6 sm:p-8 border border-amber-400/25 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-[0.2em] text-amber-300">Tek Tıkla Gönderim Merkezi</span>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1">
+            Hazır İletişim &amp; Demo Gönderim Kartı
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            Üstteki <strong class="text-amber-200">Ekran Görüntüsü Modu</strong> ile şemanın görselini alıp aşağıdaki hazır metinlerle WhatsApp veya E-posta üzerinden iletebilirsiniz.
+          </p>
+        </div>
+
+        <a href="https://flowmind-ai-nu-two.vercel.app" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl text-sm font-extrabold text-slate-950 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 hover:brightness-110 shadow-lg shadow-amber-500/20 transition shrink-0">
+          <span>Canlı AI Demosunu Test Et</span>
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div class="flex items-center gap-2.5">
+        <button id="tab-btn-wp" onclick="switchOutreachTab('wp')"
+                class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-teal-500/20 text-teal-200 border border-teal-400/40 transition cursor-pointer">
+          💬 WhatsApp Mesajı
+        </button>
+        <button id="tab-btn-email" onclick="switchOutreachTab('email')"
+                class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white/5 text-slate-300 border border-white/10 hover:border-white/25 transition cursor-pointer">
+          ✉️ Kurumsal E-posta Metni
+        </button>
+      </div>
+
+      <!-- Tab 1: WhatsApp Message -->
+      <div id="tab-content-wp" class="space-y-4">
+        <div class="relative rounded-2xl bg-[#070C17] border border-white/10 p-5">
+          <pre id="wp-pitch-text" class="whitespace-pre-wrap font-sans text-xs sm:text-sm text-slate-200 leading-relaxed">Merhaba Özel Medicaworld Polikliniği Ekibi,
+
+Kadıköy Kozyatağı’ndaki güçlü konumunuzu ve 1.971+ hasta yorumuyla ulaştığınız 4.7 Google memnuniyet başarınızı yakından takip ediyoruz.
+
+Polikliniğinizin yüksek danışan trafiğine özel olarak; WhatsApp, Instagram, Web ve çağrı hattından gelen tüm yerli ve uluslararası talepleri 7/24 (TR/EN/AR/RU) 3 saniyenin altında yanıtlayıp otomatik randevuya dönüştüren özel AI Sistem Mimarisi taslağınızı hazırladık.
+
+Polikliniğinize özel çalışan canlı AI asistan demomuzu hemen inceleyebilirsiniz:
+👉 https://flowmind-ai-nu-two.vercel.app
+
+Dilerseniz 10 dakikalık kısa bir online sunumla sistemin mevcut randevu akışınıza nasıl entegre olacağını paylaşabiliriz.
+
+Saygılarımızla,
+FlowMind AI Ekibi</pre>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <span class="text-xs text-slate-400">İpucu: Ekran görüntüsü aldığınız mimari şemayı bu mesajın üstüne görsel olarak ekleyebilirsiniz.</span>
+          <button onclick="copyPitch('wp-pitch-text', 'WhatsApp mesajı panoya kopyalandı!')"
+                  class="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-bold bg-teal-500 text-slate-950 hover:bg-teal-400 transition cursor-pointer">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+            </svg>
+            <span>Metni Kopyala</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 2: Corporate Email Pitch -->
+      <div id="tab-content-email" class="hidden space-y-4">
+        <div class="rounded-xl bg-white/[0.04] border border-white/10 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="text-xs sm:text-sm text-slate-300">
+            <span class="text-amber-300 font-bold">Konu:</span>
+            <span id="email-subject-text">Özel Medicaworld Polikliniği İçin 7/24 Akıllı Hasta &amp; Randevu AI Mimarisi</span>
+          </div>
+          <button onclick="copyPitch('email-subject-text', 'E-posta konu başlığı kopyalandı!')"
+                  class="text-xs font-bold text-amber-300 hover:text-amber-200 underline self-start sm:self-auto cursor-pointer">
+            Konuyu Kopyala
+          </button>
+        </div>
+
+        <div class="relative rounded-2xl bg-[#070C17] border border-white/10 p-5">
+          <pre id="email-pitch-text" class="whitespace-pre-wrap font-sans text-xs sm:text-sm text-slate-200 leading-relaxed">Sayın Özel Medicaworld Polikliniği Yönetimi,
+
+Medikal estetik ve sağlık alanındaki yüksek işlem hacminiz, Kozyatağı merkezli güçlü altyapınız ve 1.971+ hasta yorumuna yansıyan 4.7 Google puanınız ile İstanbul’un öncü sağlık kurumları arasında yer alıyorsunuz.
+
+Yüksek danışan trafiğine sahip poliklinikler için geliştirdiğimiz FlowMind AI platformu kapsamında, Özel Medicaworld Polikliniği’nin iletişim ve randevu süreçlerine özel 4 aşamalı otonom sistem mimarisini hazırladık.
+
+Bu mimari ile polikliniğinizde sağlanan temel kazanımlar:
+• Çağrı Merkezi &amp; WhatsApp Yoğunluğunda Sıfır Bekleme: Eşzamanlı gelen tüm hasta taleplerine 3 saniyenin altında kurumsal yanıt.
+• 7/24 Çok Dilli Sağlık Turizmi Karşılaması: Gece ve mesai dışı saatlerde İngilizce, Arapça, Rusça ve Türkçe dillerinde anlık bilgilendirme ve ön triyaj.
+• Otomatik Takvim &amp; %70 Daha Az Operasyonel Yük: Uzman hekim ve oda müsaitliğine göre otomatik konsültasyon planlama ve 24s / 2s kala hatırlatma otomasyonu.
+
+Polikliniğinize özel hazırladığımız canlı yapay zeka asistan deneyimini aşağıdaki bağlantıdan hemen test edebilirsiniz:
+https://flowmind-ai-nu-two.vercel.app
+
+Ekte yer alan sistem mimarisi şeması üzerinden polikliniğinize özel kurulum sürecini aktarmak üzere uygun olduğunuz bir zaman diliminde kısa bir görüşme planlamaktan memnuniyet duyarız.
+
+Saygılarımızla,
+FlowMind AI Kurumsal Çözümler Ekibi</pre>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-end gap-3">
+          <button onclick="copyPitch('email-pitch-text', 'Kurumsal e-posta metni panoya kopyalandı!')"
+                  class="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-bold bg-amber-400 text-slate-950 hover:bg-amber-300 transition cursor-pointer">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+            </svg>
+            <span>Metni Kopyala</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Minimal Executive Footer -->
+  <footer class="border-t border-white/10 py-6 mt-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+      <div>
+        <span class="font-bold text-amber-300">FlowMind AI</span> • Özel Medicaworld Polikliniği İçin Özel Hazırlanmıştır
+      </div>
+      <div>Kozyatağı, Kadıköy / İstanbul • KVKK Uyumlu Kurumsal AI Mimarisi</div>
+    </div>
+  </footer>
+
+  <script>
+    // Stage Details Data
+    const STAGE_DETAILS = {
+      1: {
+        badge: 'Aşama 01 • Giriş Kanalları',
+        title: 'Tüm Hasta İletişim Kanallarının Tek Akıllı Havuzda Birleşmesi',
+        desc: 'Kadıköy Kozyatağı merkezli polikliniğinize WhatsApp Business, Instagram reklamları, ozelmedicaworldpoliklinigi.com.tr canlı destek ve telefon hattı üzerinden gelen tüm mesajlar tek bir merkezi AI yönlendiricisine bağlanır. Yoğun saatlerde hiçbir hasta mesajı sıraya takılmaz veya cevapsız kalmaz.',
+        impact: '✓ Mesai dışı ve öğle yoğunluğunda gelen taleplerde %0 mesaj kaybı ve anında dijital karşılama.'
+      },
+      2: {
+        badge: 'Aşama 02 • FlowMind AI Beyni',
+        title: 'Medikal Estetik Bilgi Tabanlı 7/24 Çok Dilli AI Resepsiyon',
+        desc: 'Polikliniğinizin uygulama protokolleri, işlem süreçleri ve kurumsal iletişim diliyle eğitilmiş yapay zeka; Türkçe, İngilizce, Arapça ve Rusça dillerinde hastanın ihtiyacını analiz eder, ön triyaj sorularını sorar ve güven veren profesyonel yanıtlar üretir.',
+        impact: '✓ Ortalama 3 saniyenin altında ilk yanıt ve uluslararası sağlık turizmi hastalarında yüksek güven.'
+      },
+      3: {
+        badge: 'Aşama 03 • Akıllı Randevu Motoru',
+        title: 'Uzman & Oda Müsaitliğine Göre Sıfır Çakışmalı Randevu',
+        desc: 'AI asistan, ilgilenilen medikal estetik veya poliklinik işlemine göre ilgili uzman hekimin ve uygulama odasının gerçek zamanlı takvimini kontrol eder. Hastaya uygun saatleri sunar, onay alındığında dijital ön bilgi formunu iletir ve randevuyu kesinleştirir.',
+        impact: '✓ Manuel telefon trafiğine gerek kalmadan doğrudan takvime işlenen nitelikli konsültasyon randevuları.'
+      },
+      4: {
+        badge: 'Aşama 04 • CRM & Takip Otomasyonu',
+        title: 'Poliklinik CRM Senkronizasyonu ve Akıllı Hatırlatma Zinciri',
+        desc: 'Oluşturulan her randevu ve ön görüşme notu doğrudan poliklinik CRM sistemine aktarılır. Randevuya 24 saat ve 2 saat kala otomatik WhatsApp konum/hazırlık hatırlatmaları gönderilir; yönetici panelinde kanal bazlı dönüşüm raporları anlık izlenir.',
+        impact: '✓ Randevuya gelmeme (no-show) oranlarında belirgin düşüş ve sekreterya yükünde %70 azalma.'
+      }
+    };
+
+    // Scenario Presets Data
+    const SCENARIOS = {
+      A: {
+        title: 'Senaryo A: Gece 02:30 Uluslararası Hasta Talebi (İngilizce / Arapça)',
+        steps: [
+          { stage: '01 • WhatsApp Girişi', time: '02:30:01', text: 'Londra’dan gelen danışan İngilizce olarak medikal estetik konsültasyonu ve fiyat bilgisi sordu.' },
+          { stage: '02 • FlowMind AI Beyni', time: '02:30:03', text: 'Dil otomatik algılandı (EN). Kurumsal bilgi tabanıyla işlem detayları ve ön triyaj soruları iletildi.' },
+          { stage: '03 • Randevu Motoru', time: '02:31:15', text: 'Salı 14:30 uzman konsültasyon slotu ayrıldı ve dijital ön bilgi formu hastaya gönderildi.' },
+          { stage: '04 • CRM & Hatırlatma', time: '02:31:18', text: 'VIP Sağlık Turizmi etiketiyle CRM’e işlendi; 24s ve 2s kala otomatik hatırlatma kuruldu.' }
+        ]
+      },
+      B: {
+        title: 'Senaryo B: Öğle Yoğunluğunda Eşzamanlı 15+ WhatsApp & Çağrı Talebi',
+        steps: [
+          { stage: '01 • Çoklu Kanal Akışı', time: '13:15:00', text: 'Instagram reklamı ve çağrı merkezinden aynı dakikada 16 farklı danışan talebi ulaştı.' },
+          { stage: '02 • Paralel AI İşleme', time: '13:15:02', text: '16 danışanın tamamına aynı anda sıfır bekleme süresiyle kişiselleştirilmiş yanıt verildi.' },
+          { stage: '03 • Akıllı Takvim Dağıtımı', time: '13:17:40', text: '9 danışan uygun hekim ve oda takvimine çakışmasız şekilde randevu olarak planlandı.' },
+          { stage: '04 • Yönetici Raporu', time: '13:17:45', text: 'Tüm kayıtlar poliklinik CRM sistemine aktarıldı; sekreterya yükü %70 hafifletildi.' }
+        ]
+      }
+    };
+
+    let simTimers = [];
+
+    function selectStage(stageNum) {
+      for (let i = 1; i <= 4; i++) {
+        const card = document.getElementById(`stage-card-${i}`);
+        if (card) {
+          card.classList.toggle('active-stage', i === stageNum);
+        }
+      }
+      const data = STAGE_DETAILS[stageNum];
+      if (!data) return;
+
+      document.getElementById('detail-badge').textContent = data.badge;
+      document.getElementById('detail-title').textContent = data.title;
+      document.getElementById('detail-desc').textContent = data.desc;
+      document.getElementById('detail-impact').textContent = data.impact;
+    }
+
+    function runScenario(key) {
+      const scenario = SCENARIOS[key];
+      if (!scenario) return;
+
+      // Clear previous timers & highlights
+      simTimers.forEach(t => clearTimeout(t));
+      simTimers = [];
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`stage-card-${i}`)?.classList.remove('sim-highlight');
+      }
+
+      const panel = document.getElementById('simulation-panel');
+      const stepsContainer = document.getElementById('sim-steps');
+      const statusBadge = document.getElementById('sim-status');
+      document.getElementById('sim-title').textContent = scenario.title;
+
+      panel.classList.remove('hidden');
+      statusBadge.textContent = 'Sinyal Akışı Simüle Ediliyor...';
+      stepsContainer.innerHTML = '';
+
+      scenario.steps.forEach((step, idx) => {
+        const timer = setTimeout(() => {
+          // Highlight current stage card
+          for (let i = 1; i <= 4; i++) {
+            document.getElementById(`stage-card-${i}`)?.classList.toggle('sim-highlight', i === idx + 1);
+          }
+          selectStage(idx + 1);
+
+          const stepEl = document.createElement('div');
+          stepEl.className = 'rounded-xl bg-white/[0.05] border border-teal-400/35 p-4 space-y-1.5 transition-all duration-300';
+          stepEl.innerHTML = `
+            <div class="flex items-center justify-between text-[11px] font-bold">
+              <span class="text-teal-300">${step.stage}</span>
+              <span class="text-amber-300 font-mono">${step.time}</span>
+            </div>
+            <p class="text-xs text-slate-200 leading-relaxed">${step.text}</p>
+          `;
+          stepsContainer.appendChild(stepEl);
+
+          if (idx === scenario.steps.length - 1) {
+            statusBadge.textContent = '✓ Simülasyon Tamamlandı (100% Otomatik)';
+            const cleanup = setTimeout(() => {
+              for (let i = 1; i <= 4; i++) {
+                document.getElementById(`stage-card-${i}`)?.classList.remove('sim-highlight');
+              }
+            }, 1800);
+            simTimers.push(cleanup);
+          }
+        }, idx * 750);
+
+        simTimers.push(timer);
+      });
+    }
+
+    function toggleScreenshotMode() {
+      const isScreenshot = document.body.classList.toggle('screenshot-mode');
+      const label = document.getElementById('screenshot-label');
+      if (isScreenshot) {
+        label.textContent = 'Düzenleme Moduna Dön';
+        showToast('Ekran Görüntüsü Modu aktif — yardımcı butonlar gizlendi.');
+      } else {
+        label.textContent = 'Ekran Görüntüsü Modu';
+        showToast('Normal görünüme dönüldü.');
+      }
+    }
+
+    function switchOutreachTab(tab) {
+      const wpBtn = document.getElementById('tab-btn-wp');
+      const emailBtn = document.getElementById('tab-btn-email');
+      const wpContent = document.getElementById('tab-content-wp');
+      const emailContent = document.getElementById('tab-content-email');
+
+      if (tab === 'wp') {
+        wpBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-teal-500/20 text-teal-200 border border-teal-400/40 transition cursor-pointer';
+        emailBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white/5 text-slate-300 border border-white/10 hover:border-white/25 transition cursor-pointer';
+        wpContent.classList.remove('hidden');
+        emailContent.classList.add('hidden');
+      } else {
+        emailBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-amber-400/20 text-amber-200 border border-amber-400/40 transition cursor-pointer';
+        wpBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white/5 text-slate-300 border border-white/10 hover:border-white/25 transition cursor-pointer';
+        emailContent.classList.remove('hidden');
+        wpContent.classList.add('hidden');
+      }
+    }
+
+    function copyPitch(elementId, successMessage) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const textToCopy = el.innerText || el.textContent || '';
+
+      try {
+        const tempArea = document.createElement('textarea');
+        tempArea.value = textToCopy;
+        tempArea.style.position = 'fixed';
+        tempArea.style.left = '-9999px';
+        document.body.appendChild(tempArea);
+        tempArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempArea);
+        showToast(successMessage);
+      } catch (err) {
+        showToast('Kopyalama sırasında bir hata oluştu, lütfen metni manuel seçin.');
+      }
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-3');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-3');
+      }, 2800);
+    }
+  </script>
+</body>
+</html>
